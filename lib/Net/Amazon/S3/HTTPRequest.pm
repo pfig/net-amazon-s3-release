@@ -21,7 +21,7 @@ has 'path'   => ( is => 'ro', isa => 'Str',             required => 1 );
 has 'headers' =>
     ( is => 'ro', isa => 'HashRef', required => 0, default => sub { {} } );
 has 'content' =>
-    ( is => 'ro', isa => 'Str|CodeRef', required => 0, default => '' );
+    ( is => 'ro', isa => 'Str|CodeRef|ScalarRef', required => 0, default => '' );
 has 'metadata' =>
     ( is => 'ro', isa => 'HashRef', required => 0, default => sub { {} } );
 
