@@ -390,6 +390,13 @@ no strict 'vars'
   # return the URI of a publically-accessible object
   my $uri = $object->uri;
 
+  # to store a new object with server-side encryption enabled
+  my $object = $bucket->object(
+    key        => 'my secret',
+    encryption => 'AES256',
+  );
+  $object->put('this data will be stored using encryption.');
+
   # upload a file
   my $object = $bucket->object(
     key          => 'images/my_hat.jpg',
