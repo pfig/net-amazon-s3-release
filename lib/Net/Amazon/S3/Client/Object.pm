@@ -43,6 +43,11 @@ has 'content_encoding' => (
     isa      => 'Str',
     required => 0,
 );
+has 'encryption' => (
+    is       => 'ro',
+    isa      => 'Maybe[Str]',
+    required => 0,
+);
 
 __PACKAGE__->meta->make_immutable;
 
@@ -132,6 +137,7 @@ sub put {
         value     => $value,
         headers   => $conf,
         acl_short => $self->acl_short,
+        encryption => $self->encryption,
     )->http_request;
 
     my $http_response = $self->client->_send_request($http_request);
@@ -182,6 +188,7 @@ sub put_filename {
         value     => $self->_content_sub($filename),
         headers   => $conf,
         acl_short => $self->acl_short,
+        encryption => $self->encryption,
     )->http_request;
 
     my $http_response = $self->client->_send_request($http_request);
@@ -210,6 +217,7 @@ sub initiate_multipart_upload {
         s3     => $self->client->s3,
         bucket => $self->bucket->name,
         key    => $self->key,
+        encryption => $self->encryption,
     )->http_request;
     my $xpc = $self->client->_send_request_xpc($http_request);
     my $upload_id = $xpc->findvalue('//s3:UploadId');

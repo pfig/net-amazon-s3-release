@@ -11,6 +11,7 @@ has 'value'     => ( is => 'ro', isa => 'Str|CodeRef',     required => 1 );
 has 'acl_short' => ( is => 'ro', isa => 'Maybe[AclShort]', required => 0 );
 has 'headers' =>
     ( is => 'ro', isa => 'HashRef', required => 0, default => sub { {} } );
+has 'encryption'=> ( is => 'ro', isa => 'Maybe[Str]',      required => 0 );
 
 __PACKAGE__->meta->make_immutable;
 
@@ -20,6 +21,9 @@ sub http_request {
 
     if ( $self->acl_short ) {
         $headers->{'x-amz-acl'} = $self->acl_short;
+    }
+    if ( defined $self->encryption ) {
+        $headers->{'x-amz-server-side-encryption'} = $self->encryption;
     }
 
     return Net::Amazon::S3::HTTPRequest->new(
