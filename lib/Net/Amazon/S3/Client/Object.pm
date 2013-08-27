@@ -131,12 +131,12 @@ sub put {
     }
 
     my $http_request = Net::Amazon::S3::Request::PutObject->new(
-        s3        => $self->client->s3,
-        bucket    => $self->bucket->name,
-        key       => $self->key,
-        value     => $value,
-        headers   => $conf,
-        acl_short => $self->acl_short,
+        s3         => $self->client->s3,
+        bucket     => $self->bucket->name,
+        key        => $self->key,
+        value      => $value,
+        headers    => $conf,
+        acl_short  => $self->acl_short,
         encryption => $self->encryption,
     )->http_request;
 
@@ -182,12 +182,12 @@ sub put_filename {
 
 
     my $http_request = Net::Amazon::S3::Request::PutObject->new(
-        s3        => $self->client->s3,
-        bucket    => $self->bucket->name,
-        key       => $self->key,
-        value     => $self->_content_sub($filename),
-        headers   => $conf,
-        acl_short => $self->acl_short,
+        s3         => $self->client->s3,
+        bucket     => $self->bucket->name,
+        key        => $self->key,
+        value      => $self->_content_sub($filename),
+        headers    => $conf,
+        acl_short  => $self->acl_short,
         encryption => $self->encryption,
     )->http_request;
 
