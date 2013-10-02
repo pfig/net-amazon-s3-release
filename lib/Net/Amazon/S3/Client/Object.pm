@@ -43,6 +43,11 @@ has 'content_encoding' => (
     isa      => 'Str',
     required => 0,
 );
+has 'cache_control' => (
+    is       => 'ro',
+    isa      => 'Str',
+    required => 0,
+);
 
 __PACKAGE__->meta->make_immutable;
 
@@ -124,6 +129,9 @@ sub put {
     if ( $self->content_disposition ) {
         $conf->{'Content-Disposition'} = $self->content_disposition;
     }
+    if ( $self->cache_control ) {
+        $conf->{'Cache-Control'} = $self->cache_control;
+    }
 
     my $http_request = Net::Amazon::S3::Request::PutObject->new(
         s3        => $self->client->s3,
@@ -172,6 +180,9 @@ sub put_filename {
     }
     if ( $self->content_disposition ) {
         $conf->{'Content-Disposition'} = $self->content_disposition;
+    }
+    if ( $self->cache_control ) {
+        $conf->{'Cache-Control'} = $self->cache_control;
     }
 
 
