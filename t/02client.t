@@ -26,8 +26,8 @@ my $s3 = Net::Amazon::S3->new(
     retry                 => 1,
 );
 
-my $readme_size   = stat('README')->size;
-my $readme_md5hex = file_md5_hex('README');
+my $readme_size   = stat('README.md')->size;
+my $readme_md5hex = file_md5_hex('README.md');
 
 my $client = Net::Amazon::S3::Client->new( s3 => $s3 );
 
@@ -41,7 +41,7 @@ TODO: {
     is( scalar @buckets, 6, 'have a bunch of buckets' );
 }
 
-my $bucket_name = 'net-amazon-s3-test-' . lc $aws_access_key_id;
+my $bucket_name = 'net-amazon-s3-test-' . lc $aws_access_key_id . '-'. time;
 
 my $bucket = $client->create_bucket(
     name                => $bucket_name,
@@ -174,7 +174,7 @@ throws_ok { $object->get } qr/NoSuchKey/,
 # upload a file with put_filename
 
 $object = $bucket->object( key => 'the readme' );
-$object->put_filename('README');
+$object->put_filename('README.md');
 
 @objects = ();
 $stream  = $bucket->list;
@@ -202,7 +202,7 @@ $object = $bucket->object(
     key       => 'the public readme',
     acl_short => 'public-read'
 );
-$object->put_filename('README');
+$object->put_filename('README.md');
 is( length( get( $object->uri ) ),
     $readme_size, 'newly uploaded public object has the right size' );
 $object->delete;
@@ -214,7 +214,7 @@ $object = $bucket->object(
     etag => $readme_md5hex,
     size => $readme_size
 );
-$object->put_filename('README');
+$object->put_filename('README.md');
 
 @objects = ();
 $stream  = $bucket->list;
@@ -250,7 +250,7 @@ $object = $bucket->object(
     size      => $readme_size,
     acl_short => 'public-read'
 );
-$object->put_filename( 'README', $readme_md5hex, $readme_size );
+$object->put_filename( 'README.md', $readme_md5hex, $readme_size );
 is( length( get( $object->uri ) ),
     $readme_size, 'newly uploaded public object has the right size' );
 $object->delete;
@@ -305,7 +305,7 @@ for my $i(1..3){
         etag => $readme_md5hex,
         size => $readme_size
     );
-    $bulk_object->put_filename('README');
+    $bulk_object->put_filename('README.md');
     push @objects, $bulk_object;
 }
 #now delete 2 of those objects
