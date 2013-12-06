@@ -12,7 +12,7 @@ use File::Temp qw/ :seekable /;
 unless ( $ENV{'AMAZON_S3_EXPENSIVE_TESTS'} ) {
     plan skip_all => 'Testing this module for real costs money.';
 } else {
-    plan tests => 48;
+    plan tests => 49;
 }
 
 use_ok('Net::Amazon::S3');
@@ -293,6 +293,10 @@ $tmp_fh->seek((5 * 1024 * 1024) - 1, SEEK_SET);#jump to 5MB position
 my $test_bytes;
 read($tmp_fh, $test_bytes, 2);
 is($test_bytes, "xz", "The second chunk of the file begins in the correct place");
+
+#test listing a multipart object
+$stream = $bucket->list({prefix => 'new multipart file'});
+lives_ok {my @items = $stream->items} 'Listing a multipart file does not throw an exeption';
 
 $object->delete;
 
