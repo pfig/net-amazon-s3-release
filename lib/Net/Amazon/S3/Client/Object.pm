@@ -13,7 +13,7 @@ use IO::File 1.14;
 # ABSTRACT: An easy-to-use Amazon S3 client object
 
 enum 'AclShort' =>
-    qw(private public-read public-read-write authenticated-read);
+    [ qw(private public-read public-read-write authenticated-read) ];
 
 has 'client' =>
     ( is => 'ro', isa => 'Net::Amazon::S3::Client', required => 1 );
