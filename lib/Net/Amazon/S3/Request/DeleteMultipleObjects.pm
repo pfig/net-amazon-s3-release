@@ -6,6 +6,8 @@ use Digest::MD5;
 use MIME::Base64;
 extends 'Net::Amazon::S3::Request';
 
+# ABSTRACT: An internal class to delete multiple objects
+
 has 'bucket' => ( is => 'ro', isa => 'BucketName', required => 1 );
 has 'keys'    => ( is => 'ro', isa => 'ArrayRef[Str]', required => 1 );
 __PACKAGE__->meta->make_immutable;
@@ -13,10 +15,9 @@ __PACKAGE__->meta->make_immutable;
 sub http_request {
     my $self = shift;
 
-
     my $doc = XML::LibXML::Document->new("1.0", 'utf-8');
-    my $docroot = $doc->createElement("Delete"); 
-    $doc->setDocumentElement($docroot); 
+    my $docroot = $doc->createElement("Delete");
+    $doc->setDocumentElement($docroot);
 
     my $quiet_node = $doc->createElement("Quiet");
     $quiet_node->appendChild($doc->createTextNode('false'));
@@ -31,8 +32,6 @@ sub http_request {
     }
 
     my $delete_content = $doc->toString(1);
-    
-
     my $md5_hex = Digest::MD5::md5_hex($delete_content);
     my $md5 = pack( 'H*', $md5_hex );
     my $md5_base64 = encode_base64($md5);
