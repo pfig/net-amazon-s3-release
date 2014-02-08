@@ -112,16 +112,21 @@ use Net::Amazon::S3::Client::Bucket;
 use Net::Amazon::S3::Client::Object;
 use Net::Amazon::S3::HTTPRequest;
 use Net::Amazon::S3::Request;
+use Net::Amazon::S3::Request::CompleteMultipartUpload;
 use Net::Amazon::S3::Request::CreateBucket;
 use Net::Amazon::S3::Request::DeleteBucket;
+use Net::Amazon::S3::Request::DeleteMultiObject;
 use Net::Amazon::S3::Request::DeleteObject;
 use Net::Amazon::S3::Request::GetBucketAccessControl;
 use Net::Amazon::S3::Request::GetBucketLocationConstraint;
 use Net::Amazon::S3::Request::GetObject;
 use Net::Amazon::S3::Request::GetObjectAccessControl;
+use Net::Amazon::S3::Request::InitiateMultipartUpload;
 use Net::Amazon::S3::Request::ListAllMyBuckets;
 use Net::Amazon::S3::Request::ListBucket;
+use Net::Amazon::S3::Request::ListParts;
 use Net::Amazon::S3::Request::PutObject;
+use Net::Amazon::S3::Request::PutPart;
 use Net::Amazon::S3::Request::SetBucketAccessControl;
 use Net::Amazon::S3::Request::SetObjectAccessControl;
 use LWP::UserAgent::Determined;
@@ -139,6 +144,7 @@ has 'libxml' => ( is => 'rw', isa => 'XML::LibXML',    required => 0 );
 has 'ua'     => ( is => 'rw', isa => 'LWP::UserAgent', required => 0 );
 has 'err'    => ( is => 'rw', isa => 'Maybe[Str]',     required => 0 );
 has 'errstr' => ( is => 'rw', isa => 'Maybe[Str]',     required => 0 );
+has 'aws_session_token' => ( is => 'ro', isa => 'Str', required => 0 );
 
 __PACKAGE__->meta->make_immutable;
 
@@ -169,6 +175,12 @@ only have come from you.
 
 DO NOT INCLUDE THIS IN SCRIPTS OR APPLICATIONS YOU DISTRIBUTE. YOU'LL BE SORRY
 
+=item aws_session_token
+
+If you are using temporary credentials provided by the AWS Security Token
+Service, set the token here, and it will be added to the request in order to
+authenticate it.
+
 =item secure
 
 Set this to C<1> if you want to use SSL-encrypted connections when talking
@@ -196,13 +208,13 @@ sub BUILD {
     if ( $self->retry ) {
         $ua = LWP::UserAgent::Determined->new(
             keep_alive            => $KEEP_ALIVE_CACHESIZE,
-            requests_redirectable => [qw(GET HEAD DELETE PUT)],
+            requests_redirectable => [qw(GET HEAD DELETE PUT POST)],
         );
         $ua->timing('1,2,4,8,16,32');
     } else {
         $ua = LWP::UserAgent->new(
             keep_alive            => $KEEP_ALIVE_CACHESIZE,
-            requests_redirectable => [qw(GET HEAD DELETE PUT)],
+            requests_redirectable => [qw(GET HEAD DELETE PUT POST)],
         );
     }
 
@@ -689,7 +701,6 @@ sub _send_request_expect_nothing {
     # warn $http_request->as_string;
 
     my $response = $self->_do_http($http_request);
-    my $content  = $response->content;
 
     return 1 if $response->code =~ /^2\d\d$/;
 
@@ -730,8 +741,6 @@ sub _send_request_expect_nothing_probed {
 
     $response = $self->_do_http($http_request);
     $self->ua->requests_redirectable($old_redirectable);
-
-    my $content = $response->content;
 
     return 1 if $response->code =~ /^2\d\d$/;
 
