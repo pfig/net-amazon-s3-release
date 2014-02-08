@@ -112,6 +112,7 @@ use Net::Amazon::S3::Client::Bucket;
 use Net::Amazon::S3::Client::Object;
 use Net::Amazon::S3::HTTPRequest;
 use Net::Amazon::S3::Request;
+use Net::Amazon::S3::Request::AbortMultipartUpload;
 use Net::Amazon::S3::Request::CompleteMultipartUpload;
 use Net::Amazon::S3::Request::CreateBucket;
 use Net::Amazon::S3::Request::DeleteBucket;
