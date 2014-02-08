@@ -7,8 +7,8 @@ use Regexp::Common qw /net/;
 # ABSTRACT: Base class for request objects
 
 enum 'AclShort' =>
-    qw(private public-read public-read-write authenticated-read);
-enum 'LocationConstraint' => ( 'US', 'EU' );
+    [ qw(private public-read public-read-write authenticated-read) ];
+enum 'LocationConstraint' => [ 'US', 'EU' ];
 
 # To comply with Amazon S3 requirements, bucket names must:
 # Contain lowercase letters, numbers, periods (.), underscores (_), and dashes (-)
