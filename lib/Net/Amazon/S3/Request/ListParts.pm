@@ -1,10 +1,10 @@
 package Net::Amazon::S3::Request::ListParts;
 
-# ABSTRACT: List the parts in a multipart upload.
-
 use Moose 0.85;
 use MooseX::StrictConstructor 0.16;
 extends 'Net::Amazon::S3::Request';
+
+# ABSTRACT: List the parts in a multipart upload.
 
 has 'bucket'            => ( is => 'ro', isa => 'BucketName',      required => 1 );
 has 'key'               => ( is => 'ro', isa => 'Str',             required => 1 );

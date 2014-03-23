@@ -1,4 +1,5 @@
 package Net::Amazon::S3::Request::CreateBucket;
+
 use Moose 0.85;
 extends 'Net::Amazon::S3::Request';
 

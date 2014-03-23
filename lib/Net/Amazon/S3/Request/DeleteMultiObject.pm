@@ -1,6 +1,6 @@
 package Net::Amazon::S3::Request::DeleteMultiObject;
-use Moose 0.85;
 
+use Moose 0.85;
 use Digest::MD5 qw/md5 md5_hex/;
 use MIME::Base64;
 use Carp qw/croak/;

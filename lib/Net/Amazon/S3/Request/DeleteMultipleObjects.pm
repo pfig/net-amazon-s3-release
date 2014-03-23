@@ -1,4 +1,5 @@
 package Net::Amazon::S3::Request::DeleteMultipleObjects;
+
 use Moose 0.85;
 use Moose::Util::TypeConstraints;
 use XML::LibXML;

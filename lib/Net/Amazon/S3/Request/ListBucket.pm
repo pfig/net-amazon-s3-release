@@ -1,4 +1,5 @@
 package Net::Amazon::S3::Request::ListBucket;
+
 use Moose 0.85;
 use MooseX::StrictConstructor 0.16;
 use URI::Escape qw(uri_escape_utf8);
