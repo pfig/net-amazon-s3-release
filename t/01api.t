@@ -243,11 +243,11 @@ for my $location ( undef, 'EU' ) {
     $bucket_obj->delete_key($keyname);
 
     # now play with the file methods
-    my $readme_md5  = file_md5_hex('README');
-    my $readme_size = -s 'README';
+    my $readme_md5  = file_md5_hex('README.md');
+    my $readme_size = -s 'README.md';
     $keyname .= "2";
     $bucket_obj->add_key_filename(
-        $keyname, 'README',
+        $keyname, 'README.md',
         {   content_type        => 'text/plain',
             'x-amz-meta-colour' => 'orangy',
         }
@@ -260,13 +260,13 @@ for my $location ( undef, 'EU' ) {
     is( $response->{'x-amz-meta-colour'}, 'orangy' );
     is( $response->{content_length},      $readme_size );
 
-    unlink('t/README');
-    $response = $bucket_obj->get_key_filename( $keyname, undef, 't/README' );
+    unlink('t/README.md');
+    $response = $bucket_obj->get_key_filename( $keyname, undef, 't/README.md' );
 
     is( $response->{content_type},        'text/plain' );
     is( $response->{value},               '' );
     is( $response->{etag},                $readme_md5 );
-    is( file_md5_hex('t/README'),         $readme_md5 );
+    is( file_md5_hex('t/README.md'),      $readme_md5 );
     is( $response->{'x-amz-meta-colour'}, 'orangy' );
     is( $response->{content_length},      $readme_size );
 
