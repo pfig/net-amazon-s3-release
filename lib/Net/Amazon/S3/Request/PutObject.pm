@@ -7,7 +7,7 @@ extends 'Net::Amazon::S3::Request';
 
 has 'bucket'    => ( is => 'ro', isa => 'BucketName',      required => 1 );
 has 'key'       => ( is => 'ro', isa => 'Str',             required => 1 );
-has 'value'     => ( is => 'ro', isa => 'Str|CodeRef',     required => 1 );
+has 'value'     => ( is => 'ro', isa => 'Str|CodeRef|ScalarRef',     required => 1 );
 has 'acl_short' => ( is => 'ro', isa => 'Maybe[AclShort]', required => 0 );
 has 'headers' =>
     ( is => 'ro', isa => 'HashRef', required => 0, default => sub { {} } );

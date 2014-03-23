@@ -5,7 +5,7 @@ extends 'Net::Amazon::S3::Request';
 
 has 'bucket'        => ( is => 'ro', isa => 'BucketName',      required => 1 );
 has 'key'           => ( is => 'ro', isa => 'Str',             required => 1 );
-has 'value'         => ( is => 'ro', isa => 'Str|CodeRef',     required => 0 );
+has 'value'         => ( is => 'ro', isa => 'Str|CodeRef|ScalarRef',     required => 0 );
 has 'upload_id'     => ( is => 'ro', isa => 'Str',             required => 1 );
 has 'part_number'   => ( is => 'ro', isa => 'Int',             required => 1 );
 has 'copy_source_bucket'    => ( is => 'ro', isa => 'Str',     required => 0 );
