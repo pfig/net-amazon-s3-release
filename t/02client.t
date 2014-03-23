@@ -12,7 +12,7 @@ use File::Temp qw/ :seekable /;
 unless ( $ENV{'AMAZON_S3_EXPENSIVE_TESTS'} ) {
     plan skip_all => 'Testing this module for real costs money.';
 } else {
-    plan tests => 48;
+    plan tests => 49;
 }
 
 use_ok('Net::Amazon::S3');
@@ -26,8 +26,8 @@ my $s3 = Net::Amazon::S3->new(
     retry                 => 1,
 );
 
-my $readme_size   = stat('README')->size;
-my $readme_md5hex = file_md5_hex('README');
+my $readme_size   = stat('README.md')->size;
+my $readme_md5hex = file_md5_hex('README.md');
 
 my $client = Net::Amazon::S3::Client->new( s3 => $s3 );
 
@@ -41,9 +41,9 @@ TODO: {
     is( scalar @buckets, 6, 'have a bunch of buckets' );
 }
 
-my $bucket_name = 'net-amazon-s3-test-' . lc $aws_access_key_id;
+my $bucket_name = 'net-amazon-s3-test-' . lc $aws_access_key_id . '-'. time;
 
-my $bucket = $client->create_bucket(
+my $bucket = $client->bucket(name => $bucket_name) || $client->create_bucket(
     name                => $bucket_name,
     acl_short           => 'public-read',
     location_constraint => 'EU',
@@ -174,7 +174,7 @@ throws_ok { $object->get } qr/NoSuchKey/,
 # upload a file with put_filename
 
 $object = $bucket->object( key => 'the readme' );
-$object->put_filename('README');
+$object->put_filename('README.md');
 
 @objects = ();
 $stream  = $bucket->list;
@@ -202,7 +202,7 @@ $object = $bucket->object(
     key       => 'the public readme',
     acl_short => 'public-read'
 );
-$object->put_filename('README');
+$object->put_filename('README.md');
 is( length( get( $object->uri ) ),
     $readme_size, 'newly uploaded public object has the right size' );
 $object->delete;
@@ -214,7 +214,7 @@ $object = $bucket->object(
     etag => $readme_md5hex,
     size => $readme_size
 );
-$object->put_filename('README');
+$object->put_filename('README.md');
 
 @objects = ();
 $stream  = $bucket->list;
@@ -250,10 +250,46 @@ $object = $bucket->object(
     size      => $readme_size,
     acl_short => 'public-read'
 );
-$object->put_filename( 'README', $readme_md5hex, $readme_size );
+$object->put_filename( 'README.md', $readme_md5hex, $readme_size );
 is( length( get( $object->uri ) ),
     $readme_size, 'newly uploaded public object has the right size' );
 $object->delete;
+
+{
+  # upload an object using multipart upload and then abort it
+  $object = $bucket->object(
+    key       => 'new multipart file soon to be aborted',
+    acl_short => 'public-read'
+  );
+
+  my $upload_id;
+  ok(
+    $upload_id = $object->initiate_multipart_upload,
+    "can initiate a new multipart upload -- $upload_id"
+  );
+
+  #put part
+
+  my $put_part_response;
+  ok(
+    $put_part_response = $object->put_part(
+      part_number => 1,
+      upload_id   => $upload_id,
+      value       => 'x' x ( 5 * 1024 * 1024 )
+    ),
+    'Got a successful response for PUT part'
+  );
+  ok( $put_part_response->header('ETag'), 'etag ok' );
+
+  ok(
+    my $abort_response =
+      $object->abort_multipart_upload( upload_id => $upload_id ),
+    'Got a successful response for DELETE multipart upload'
+  );
+
+  ok( !$object->exists, "object has now been deleted" );
+
+}
 
 
 # upload an object using multipart upload
@@ -294,6 +330,10 @@ my $test_bytes;
 read($tmp_fh, $test_bytes, 2);
 is($test_bytes, "xz", "The second chunk of the file begins in the correct place");
 
+#test listing a multipart object
+$stream = $bucket->list({prefix => 'new multipart file'});
+lives_ok {my @items = $stream->items} 'Listing a multipart file does not throw an exeption';
+
 $object->delete;
 
 #test multi-object delete
@@ -305,7 +345,7 @@ for my $i(1..3){
         etag => $readme_md5hex,
         size => $readme_size
     );
-    $bulk_object->put_filename('README');
+    $bulk_object->put_filename('README.md');
     push @objects, $bulk_object;
 }
 #now delete 2 of those objects

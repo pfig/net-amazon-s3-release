@@ -13,7 +13,7 @@ use URI;
 my $METADATA_PREFIX      = 'x-amz-meta-';
 my $AMAZON_HEADER_PREFIX = 'x-amz-';
 
-enum 'HTTPMethod' => qw(DELETE GET HEAD PUT POST);
+enum 'HTTPMethod' => [ qw(DELETE GET HEAD PUT POST) ];
 
 has 's3'     => ( is => 'ro', isa => 'Net::Amazon::S3', required => 1 );
 has 'method' => ( is => 'ro', isa => 'HTTPMethod',      required => 1 );

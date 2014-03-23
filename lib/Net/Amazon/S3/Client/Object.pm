@@ -13,7 +13,7 @@ use IO::File 1.14;
 # ABSTRACT: An easy-to-use Amazon S3 client object
 
 enum 'AclShort' =>
-    qw(private public-read public-read-write authenticated-read);
+    [ qw(private public-read public-read-write authenticated-read) ];
 
 enum 'StorageClass' =>
     [ qw(standard reduced_redundancy) ];
@@ -247,6 +247,22 @@ sub complete_multipart_upload {
       Net::Amazon::S3::Request::CompleteMultipartUpload->new(%args)->http_request;
     return $self->client->_send_request($http_request);
 }
+
+sub abort_multipart_upload {
+    my $self = shift;
+
+    my %args = ref($_[0]) ? %{$_[0]} : @_;
+
+    #set default args
+    $args{s3}       = $self->client->s3;
+    $args{key}      = $self->key;
+    $args{bucket}   = $self->bucket->name;
+
+    my $http_request =
+      Net::Amazon::S3::Request::AbortMultipartUpload->new(%args)->http_request;
+    return $self->client->_send_request($http_request);
+}
+
 
 sub put_part {
     my $self = shift;
