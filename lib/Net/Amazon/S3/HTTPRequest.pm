@@ -41,9 +41,10 @@ sub http_request {
     $self->_add_auth_header( $http_headers, $method, $path )
         unless exists $headers->{Authorization};
     my $protocol = $self->s3->secure ? 'https' : 'http';
-    my $uri = "$protocol://s3.amazonaws.com/$path";
+    my $host = $self->s3->host;
+    my $uri = "$protocol://$host/$path";
     if ( $path =~ m{^([^/?]+)(.*)} && _is_dns_bucket($1) ) {
-        $uri = "$protocol://$1.s3.amazonaws.com$2";
+        $uri = "$protocol://$1.$host$2";
     }
 
     my $request
@@ -71,9 +72,10 @@ sub query_string_authentication_uri {
         = $self->_encode( $aws_secret_access_key, $canonical_string );
 
     my $protocol = $self->s3->secure ? 'https' : 'http';
-    my $uri = "$protocol://s3.amazonaws.com/$path";
+    my $host = $self->s3->host;
+    my $uri = "$protocol://$host/$path";
     if ( $path =~ m{^([^/?]+)(.*)} && _is_dns_bucket($1) ) {
-        $uri = "$protocol://$1.s3.amazonaws.com$2";
+        $uri = "$protocol://$1.$host$2";
     }
     $uri = URI->new($uri);
 
