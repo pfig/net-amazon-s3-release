@@ -14,6 +14,8 @@ has 's3' => ( is => 'ro', isa => 'Net::Amazon::S3', required => 1 );
 
 __PACKAGE__->meta->make_immutable;
 
+sub bucket_class { 'Net::Amazon::S3::Client::Bucket' }
+
 sub buckets {
     my $self = shift;
     my $s3   = $self->s3;
@@ -34,7 +36,7 @@ sub buckets {
         $xpc->findnodes('/s3:ListAllMyBucketsResult/s3:Buckets/s3:Bucket') )
     {
         push @buckets,
-            Net::Amazon::S3::Client::Bucket->new(
+            $self->bucket_class->new(
             {   client => $self,
                 name   => $xpc->findvalue( './s3:Name', $node ),
                 creation_date =>
@@ -51,7 +53,7 @@ sub buckets {
 sub create_bucket {
     my ( $self, %conf ) = @_;
 
-    my $bucket = Net::Amazon::S3::Client::Bucket->new(
+    my $bucket = $self->bucket_class->new(
         client => $self,
         name   => $conf{name},
     );
@@ -64,7 +66,7 @@ sub create_bucket {
 
 sub bucket {
     my ( $self, %conf ) = @_;
-    return Net::Amazon::S3::Client::Bucket->new(
+    return $self->bucket_class->new(
         client => $self,
         %conf,
     );
@@ -200,4 +202,10 @@ may change.
   # or use an existing bucket
   # returns a L<Net::Amazon::S3::Client::Bucket> object
   my $bucket = $client->bucket( name => $bucket_name );
+
+=head2 bucket_class
+
+  # returns string "Net::Amazon::S3::Client::Bucket"
+  # subclasses will want to override this.
+  my $bucket_class = $client->bucket_class
 

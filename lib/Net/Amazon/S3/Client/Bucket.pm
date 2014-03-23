@@ -68,6 +68,8 @@ sub location_constraint {
     return $lc;
 }
 
+sub object_class { 'Net::Amazon::S3::Client::Object' }
+
 sub list {
     my ( $self, $conf ) = @_;
     $conf ||= {};
@@ -104,7 +106,7 @@ sub list {
  #                $xpc->findvalue( ".//s3:DisplayName", $node ),
 
                 push @objects,
-                    Net::Amazon::S3::Client::Object->new(
+                    $self->object_class->new(
                     client => $self->client,
                     bucket => $self,
                     key    => $xpc->findvalue( './s3:Key', $node ),
@@ -146,7 +148,7 @@ sub delete_multi_object {
 
 sub object {
     my ( $self, %conf ) = @_;
-    return Net::Amazon::S3::Client::Object->new(
+    return $self->object_class->new(
         client => $self->client,
         bucket => $self,
         %conf,
@@ -247,3 +249,10 @@ This module represents buckets.
   # Accepts a list of L<Net::Amazon::S3::Client::Object> objects.
   # Limited to a maximum of 1000 objects in one operation
   $bucket->delete_multi_object($object1, $object2)
+
+=head2 object_class
+
+  # returns string "Net::Amazon::S3::Client::Object"
+  # allowing subclasses to add behavior.
+  my $object_class = $bucket->object_class;
+
