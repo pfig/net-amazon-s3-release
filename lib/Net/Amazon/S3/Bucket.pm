@@ -147,15 +147,12 @@ sub add_key {
         headers   => $conf,
     )->http_request;
 
-    # If we're pushing to a bucket that's under DNS flux, we might get a 307
-    # Since LWP doesn't support actually waiting for a 100 Continue response,
-    # we'll just send a HEAD first to see what's going on
-
     if ( ref($value) ) {
-        return $self->account->_send_request_expect_nothing_probed($http_request);
-    } else {
-        return $self->account->_send_request_expect_nothing($http_request);
+        # we may get a 307 redirect; ask server to signal 100 Continue
+        # before reading the content from CODE reference (_content_sub)
+        $http_request->header('Expect' => '100-continue');
     }
+    return $self->account->_send_request_expect_nothing($http_request);
 }
 
 =head2 add_key_filename

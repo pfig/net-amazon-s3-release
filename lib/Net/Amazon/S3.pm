@@ -717,46 +717,6 @@ sub _send_request_expect_nothing {
     return 0;
 }
 
-# Send a HEAD request first, to find out if we'll be hit with a 307 redirect.
-# Since currently LWP does not have true support for 100 Continue, it simply
-# slams the PUT body into the socket without waiting for any possible redirect.
-# Thus when we're reading from a filehandle, when LWP goes to reissue the request
-# having followed the redirect, the filehandle's already been closed from the
-# first time we used it. Thus, we need to probe first to find out what's going on,
-# before we start sending any actual data.
-sub _send_request_expect_nothing_probed {
-    my ( $self, $http_request ) = @_;
-
-    my $head = Net::Amazon::S3::HTTPRequest->new(
-        s3     => $self,
-        method => 'HEAD',
-        path   => $http_request->uri->path,
-    )->http_request;
-
-    #my $head_request = $self->_make_request( $head );
-    my $override_uri = undef;
-
-    my $old_redirectable = $self->ua->requests_redirectable;
-    $self->ua->requests_redirectable( [] );
-
-    my $response = $self->_do_http($head);
-
-    if ( $response->code =~ /^3/ && defined $response->header('Location') ) {
-        $override_uri = $response->header('Location');
-    }
-
-    $http_request->uri($override_uri) if defined $override_uri;
-
-    $response = $self->_do_http($http_request);
-    $self->ua->requests_redirectable($old_redirectable);
-
-    return 1 if $response->code =~ /^2\d\d$/;
-
-    # anything else is a failure, and we save the parsed result
-    $self->_remember_errors( $response->content );
-    return 0;
-}
-
 sub _croak_if_response_error {
     my ( $self, $response ) = @_;
     unless ( $response->code =~ /^2\d\d$/ ) {
