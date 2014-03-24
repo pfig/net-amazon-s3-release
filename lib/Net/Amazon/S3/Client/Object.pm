@@ -46,6 +46,11 @@ has 'content_encoding' => (
     isa      => 'Str',
     required => 0,
 );
+has 'cache_control' => (
+    is       => 'ro',
+    isa      => 'Str',
+    required => 0,
+);
 has 'storage_class' => (
     is       => 'ro',
     isa      => 'StorageClass',
@@ -172,6 +177,9 @@ sub _put {
     }
     if ( $self->content_disposition ) {
         $conf->{'Content-Disposition'} = $self->content_disposition;
+    }
+    if ( $self->cache_control ) {
+        $conf->{'Cache-Control'} = $self->cache_control;
     }
     if ( $self->storage_class && $self->storage_class ne 'standard' ) {
         $conf->{'x-amz-storage-class'} = uc $self->storage_class;
