@@ -12,7 +12,7 @@ use File::Temp qw/ :seekable /;
 unless ( $ENV{'AMAZON_S3_EXPENSIVE_TESTS'} ) {
     plan skip_all => 'Testing this module for real costs money.';
 } else {
-    plan tests => 49;
+    plan tests => 54;
 }
 
 use_ok('Net::Amazon::S3');
