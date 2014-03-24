@@ -43,9 +43,7 @@ for my $location ( undef, 'EU' ) {
 
   # create a bucket
   # make sure it's a valid hostname for EU testing
-  # we use the same bucket name for both in order to force one or the other to
-  # have stale DNS
-    my $bucketname = 'net-amazon-s3-test-' . lc $aws_access_key_id;
+    my $bucketname = 'net-amazon-s3-test-' . lc($aws_access_key_id) . '-' . time;
 
     # for testing
     # my $bucket = $s3->bucket($bucketname); $bucket->delete_bucket; exit;
