@@ -41,9 +41,9 @@ TODO: {
     is( scalar @buckets, 6, 'have a bunch of buckets' );
 }
 
-my $bucket_name = 'net-amazon-s3-test-' . lc $aws_access_key_id . '-'. time;
+my $bucket_name = 'net-amazon-s3-test-' . lc($aws_access_key_id) . '-'. time;
 
-my $bucket = $client->bucket(name => $bucket_name) || $client->create_bucket(
+my $bucket = $client->create_bucket(
     name                => $bucket_name,
     acl_short           => 'public-read',
     location_constraint => 'EU',
