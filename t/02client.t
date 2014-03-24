@@ -207,12 +207,13 @@ is( length( get( $object->uri ) ),
     $readme_size, 'newly uploaded public object has the right size' );
 $object->delete;
 
-# upload a file with put_filename with known md5hex and size
+# upload a file with put_filename with known md5hex size and AES256 encryption
 
 $object = $bucket->object(
-    key  => 'the new readme',
-    etag => $readme_md5hex,
-    size => $readme_size
+    key        => 'the new readme',
+    etag       => $readme_md5hex,
+    size       => $readme_size,
+    encryption => 'AES256'
 );
 $object->put_filename('README.md');
 

@@ -58,6 +58,11 @@ has 'user_metadata' => (
     required => 0,
     default  => sub { {} },
 );
+has 'encryption' => (
+    is       => 'ro',
+    isa      => 'Maybe[Str]',
+    required => 0,
+);
 
 __PACKAGE__->meta->make_immutable;
 
@@ -175,12 +180,13 @@ sub _put {
         for keys %{ $self->user_metadata };
 
     my $http_request = Net::Amazon::S3::Request::PutObject->new(
-        s3        => $self->client->s3,
-        bucket    => $self->bucket->name,
-        key       => $self->key,
-        value     => $value,
-        headers   => $conf,
-        acl_short => $self->acl_short,
+        s3         => $self->client->s3,
+        bucket     => $self->bucket->name,
+        key        => $self->key,
+        value      => $value,
+        headers    => $conf,
+        acl_short  => $self->acl_short,
+        encryption => $self->encryption,
     )->http_request;
 
     my $http_response = $self->client->_send_request($http_request);
@@ -224,6 +230,7 @@ sub initiate_multipart_upload {
         s3     => $self->client->s3,
         bucket => $self->bucket->name,
         key    => $self->key,
+        encryption => $self->encryption,
     )->http_request;
     my $xpc = $self->client->_send_request_xpc($http_request);
     my $upload_id = $xpc->findvalue('//s3:UploadId');
@@ -411,6 +418,13 @@ no strict 'vars'
 
   # return the URI of a publically-accessible object
   my $uri = $object->uri;
+
+  # to store a new object with server-side encryption enabled
+  my $object = $bucket->object(
+    key        => 'my secret',
+    encryption => 'AES256',
+  );
+  $object->put('this data will be stored using encryption.');
 
   # upload a file
   my $object = $bucket->object(
