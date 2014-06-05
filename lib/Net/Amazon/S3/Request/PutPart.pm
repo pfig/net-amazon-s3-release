@@ -39,7 +39,7 @@ sub http_request {
                    '&uploadId=' .
                    $self->upload_id,
         headers => $headers,
-        content => $self->value // '',
+        content => scalar( defined( $self->value ) ? $self->value : '' ),
     )->http_request;
 }
 
