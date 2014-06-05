@@ -139,12 +139,31 @@ sub delete_multi_object {
     my $self = shift;
     my @objects = @_;
     return unless( scalar(@objects) );
-    my $http_request = Net::Amazon::S3::Request::DeleteMultiObject->new(
-        s3      => $self->client->s3,
-        bucket  => $self->name,
-        keys    => [ map($_->key, @objects) ],
-    )->http_request;
-    return $self->client->_send_request($http_request);
+
+    # Since delete can handle up to 1000 requests, be a little bit nicer
+    # and slice up requests and also allow keys to be strings
+    # rather than only objects.
+    my $last_result;
+    while (scalar(@objects) > 0) {
+        my $http_request = Net::Amazon::S3::Request::DeleteMultiObject->new(
+            s3      => $self->client->s3,
+            bucket  => $self->name,
+            keys    => [ map { 
+                if (ref($_)) {
+                    $_->key
+                } else {
+                    $_
+                } 
+            } splice @objects, 0, ((scalar(@objects) > 1000) ? 1000 : scalar(@objects))]
+        )->http_request;
+
+        $last_result = $self->client->_send_request($http_request);
+
+        if (!$last_result->is_success()) {
+            last;
+        }
+    }
+    return $last_result;
 }
 
 sub object {
@@ -247,8 +266,7 @@ This module represents buckets.
 =head2 delete_multi_object
 
   # delete multiple objects using a multi object delete operation
-  # Accepts a list of L<Net::Amazon::S3::Client::Object> objects.
-  # Limited to a maximum of 1000 objects in one operation
+  # Accepts a list of L<Net::Amazon::S3::Client::Object or String> objects.
   $bucket->delete_multi_object($object1, $object2)
 
 =head2 object_class
