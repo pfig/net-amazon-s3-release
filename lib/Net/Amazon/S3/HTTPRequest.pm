@@ -44,9 +44,6 @@ sub http_request {
     my $protocol = $self->s3->secure ? 'https' : 'http';
     my $host = $self->s3->host;
     my $uri = "$protocol://$host/$path";
-    if ( $path =~ m{^([^/?]+)(.*)} && _is_dns_bucket($1) ) {
-        $uri = "$protocol://$1.$host$2";
-    }
 
     my $request
         = HTTP::Request->new( $method, $uri, $http_headers, $content );
@@ -75,9 +72,7 @@ sub query_string_authentication_uri {
     my $protocol = $self->s3->secure ? 'https' : 'http';
     my $host = $self->s3->host;
     my $uri = "$protocol://$host/$path";
-    if ( $path =~ m{^([^/?]+)(.*)} && _is_dns_bucket($1) ) {
-        $uri = "$protocol://$1.$host$2";
-    }
+
     $uri = URI->new($uri);
 
     $uri->query_param( AWSAccessKeyId => $aws_access_key_id );
@@ -182,26 +177,6 @@ sub _encode {
     }
 }
 
-# EU buckets must be accessed via their DNS name. This routine figures out if
-# a given bucket name can be safely used as a DNS name.
-sub _is_dns_bucket {
-    my $bucketname = $_[0];
-
-    if ( length $bucketname > 63 ) {
-        return 0;
-    }
-    if ( length $bucketname < 3 ) {
-        return;
-    }
-    return 0 unless $bucketname =~ m{^[a-z0-9][a-z0-9.-]+$};
-    my @components = split /\./, $bucketname;
-    for my $c (@components) {
-        return 0 if $c =~ m{^-};
-        return 0 if $c =~ m{-$};
-        return 0 if $c eq '';
-    }
-    return 1;
-}
 
 # generates an HTTP::Headers objects given one hash that represents http
 # headers to set and another hash that represents an object's metadata.
