@@ -14,6 +14,9 @@ use MooseX::StrictConstructor 0.16;
   my $s3 = Net::Amazon::S3->new(
       {   aws_access_key_id     => $aws_access_key_id,
           aws_secret_access_key => $aws_secret_access_key,
+          # or use an IAM role.
+          use_iam_role          => 1
+
           retry                 => 1,
       }
   );
@@ -136,8 +139,9 @@ use URI::Escape qw(uri_escape_utf8);
 use XML::LibXML;
 use XML::LibXML::XPathContext;
 
-has 'aws_access_key_id'     => ( is => 'ro', isa => 'Str', required => 1 );
-has 'aws_secret_access_key' => ( is => 'ro', isa => 'Str', required => 1 );
+has 'use_iam_role' => ( is => 'ro', isa => 'Bool', required => 0, default => 0);
+has 'aws_access_key_id'     => ( is => 'rw', isa => 'Str', required => 0 );
+has 'aws_secret_access_key' => ( is => 'rw', isa => 'Str', required => 0 );
 has 'secure' => ( is => 'ro', isa => 'Bool', required => 0, default => 0 );
 has 'timeout' => ( is => 'ro', isa => 'Num',  required => 0, default => 30 );
 has 'retry'   => ( is => 'ro', isa => 'Bool', required => 0, default => 0 );
@@ -147,7 +151,7 @@ has 'libxml' => ( is => 'rw', isa => 'XML::LibXML',    required => 0 );
 has 'ua'     => ( is => 'rw', isa => 'LWP::UserAgent', required => 0 );
 has 'err'    => ( is => 'rw', isa => 'Maybe[Str]',     required => 0 );
 has 'errstr' => ( is => 'rw', isa => 'Maybe[Str]',     required => 0 );
-has 'aws_session_token' => ( is => 'ro', isa => 'Str', required => 0 );
+has 'aws_session_token' => ( is => 'rw', isa => 'Str', required => 0 );
 
 __PACKAGE__->meta->make_immutable;
 
@@ -184,6 +188,11 @@ If you are using temporary credentials provided by the AWS Security Token
 Service, set the token here, and it will be added to the request in order to
 authenticate it.
 
+=item use_iam_role
+
+If you'd like to use IAM provided temporary credentials, pass this option
+with a true value.
+
 =item secure
 
 Set this to C<1> if you want to use SSL-encrypted connections when talking
@@ -211,6 +220,13 @@ you to connect to any S3-compatible host.
 
 sub BUILD {
     my $self = shift;
+
+    if (!$self->use_iam_role) {
+        if (!defined($self->aws_secret_access_key) || !defoned($self->aws_access_key_id)) {
+            die("Must specify aws_secret_access_key and aws_access_key_id");
+        }
+    }
+
 
     my $ua;
     if ( $self->retry ) {
