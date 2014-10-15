@@ -7,6 +7,7 @@ use Moose::Util::TypeConstraints;
 use URI::Escape qw( uri_escape_utf8 );
 use URI::QueryParam;
 use URI;
+use VM::EC2::Security::CredentialCache;
 
 # ABSTRACT: Create a signed HTTP::Request
 
@@ -86,6 +87,15 @@ sub query_string_authentication_uri {
 
 sub _add_auth_header {
     my ( $self, $headers, $method, $path ) = @_;
+
+    if ($self->s3->use_iam_role) {
+        my $creds = VM::EC2::Security::CredentialCache->get();
+        defined($creds) || die("Unable to retrieve IAM role credentials");
+        $self->s3->aws_access_key_id($creds->accessKeyId);
+        $self->s3->aws_secret_access_key($creds->secretAccessKey);
+        $self->s3->aws_session_token($creds->sessionToken);
+    }
+
     my $aws_access_key_id     = $self->s3->aws_access_key_id;
     my $aws_secret_access_key = $self->s3->aws_secret_access_key;
     my $aws_session_token     = $self->s3->aws_session_token;
