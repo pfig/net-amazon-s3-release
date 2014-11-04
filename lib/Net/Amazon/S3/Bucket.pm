@@ -214,7 +214,7 @@ sub copy_key {
             $acl_short = $conf->{acl_short};
             delete $conf->{acl_short};
         }
-        $conf->{'x-amz-metadata-directive'} = 'REPLACE';
+        $conf->{'x-amz-metadata-directive'} ||= 'REPLACE';
     } else {
         $conf = {};
     }

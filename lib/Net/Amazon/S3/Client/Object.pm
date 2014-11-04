@@ -118,6 +118,22 @@ sub get_decoded {
     return $self->_get->decoded_content(@_);
 }
 
+sub get_callback {
+    my ( $self, $callback ) = @_;
+
+    my $http_request = Net::Amazon::S3::Request::GetObject->new(
+        s3     => $self->client->s3,
+        bucket => $self->bucket->name,
+        key    => $self->key,
+        method => 'GET',
+    )->http_request;
+
+    my $http_response
+        = $self->client->_send_request( $http_request, $callback );
+
+    return $http_response;
+}
+
 sub get_filename {
     my ( $self, $filename ) = @_;
 
