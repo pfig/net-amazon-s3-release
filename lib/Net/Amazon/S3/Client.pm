@@ -7,7 +7,7 @@ use Moose::Util::TypeConstraints;
 
 # ABSTRACT: An easy-to-use Amazon S3 client
 
-type 'Etag' => where { $_ =~ /^[a-z0-9]{32}(-\d+)?$/ };
+type 'Etag' => where { $_ =~ /^[a-z0-9]{32}(?:-\d+)?$/ };
 
 type 'OwnerId' => where { $_ =~ /^[a-z0-9]{64}$/ };
 
