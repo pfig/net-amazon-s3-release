@@ -47,7 +47,7 @@ sub http_request {
         s3     => $self->s3,
         method => 'POST',
         path   => $self->_uri() . "?delete",
-	headers => $conf,
+        headers => $conf,
         content => $delete_content,
     )->http_request;
 }

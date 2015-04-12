@@ -148,12 +148,12 @@ sub delete_multi_object {
         my $http_request = Net::Amazon::S3::Request::DeleteMultiObject->new(
             s3      => $self->client->s3,
             bucket  => $self->name,
-            keys    => [ map { 
+            keys    => [map {
                 if (ref($_)) {
                     $_->key
                 } else {
                     $_
-                } 
+                }
             } splice @objects, 0, ((scalar(@objects) > 1000) ? 1000 : scalar(@objects))]
         )->http_request;
 

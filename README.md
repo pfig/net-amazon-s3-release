@@ -52,3 +52,5 @@ following notice:
 * Brad Fitzpatrick <brad@danga.com> - return values, Bucket object.
 
 * Pedro Figueiredo <me@pedrofigueiredo.org> - since 0.54.
+
+* Rusty Conover <rusty@luckydinosaur.com> - since 0.80.
