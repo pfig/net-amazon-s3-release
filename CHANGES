@@ -6,6 +6,8 @@ Revision history for Perl module Net::Amazon::S3:
      - Add optional delimiter parameter to
        Net::Amazon::S3::Client::Bucket->list (patch by Christian
        Lackas)
+     - Add expected and received ETag value if upload is detected as
+       being incorrect.
 
 0.80 Sun Apr 12 12:33:19 GMT 2015
      - Fixed a bug in ETag validation (patch by Ali Anari)

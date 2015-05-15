@@ -221,7 +221,7 @@ sub _put {
 
     my $etag = $self->_etag($http_response);
 
-    confess 'Corrupted upload' if $etag ne $md5_hex;
+    confess "Corrupted upload got $etag expected $md5_hex" if $etag ne $md5_hex;
 }
 
 sub put_filename {
