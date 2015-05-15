@@ -29,7 +29,7 @@ Revision history for Perl module Net::Amazon::S3:
      - Add support for storage class when creating buckets along with
        user metadata (patch by Aaron Crane)
      - Add support for cache control header on
-       Net::Aamazon::S3::Client::Object (patch by toritori0318)
+       Net::Amazon::S3::Client::Object (patch by toritori0318)
      - Support server side encryption (patch by Haruka Iwao)
      - Add support for multipart upload aborting (patch by Gabriel Andrade)
 
