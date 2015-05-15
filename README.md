@@ -26,10 +26,7 @@ Note: This is the legacy interface, please check out
 Net::Amazon::S3::Client instead.
 
 Development of this code happens here:
-http://github.com/pfig/net-amazon-s3/
-
-Homepage for the project (just started) is at
-http://pfig.github.com/net-amazon-s3/
+https://github.com/rustyconover/net-amazon-s3
 
 # LICENSE
 
