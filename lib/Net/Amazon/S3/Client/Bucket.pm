@@ -75,6 +75,7 @@ sub list {
     my ( $self, $conf ) = @_;
     $conf ||= {};
     my $prefix = $conf->{prefix};
+    my $delimiter = $conf->{delimiter};
 
     my $marker = undef;
     my $end    = 0;
@@ -89,6 +90,7 @@ sub list {
                 bucket => $self->name,
                 marker => $marker,
                 prefix => $prefix,
+                delimiter => $delimiter,
             )->http_request;
 
             my $xpc = $self->client->_send_request_xpc($http_request);
@@ -246,6 +248,11 @@ This module represents buckets.
 
   # or list by a prefix
   my $prefix_stream = $bucket->list( { prefix => 'logs/' } );
+
+  # you can emulate folders by using prefix with delimiter
+  # which shows only entries starting with the prefix but
+  # not containing any more delimiter (thus no subfolders).
+  my $folder_stream = $bucket->list( { prefix => 'logs/', delimiter => '/' } );
 
 =head2 location_constraint
 
