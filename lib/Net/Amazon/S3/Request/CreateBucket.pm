@@ -21,9 +21,8 @@ sub http_request {
         : {};
 
     my $content = '';
-    if ( defined $self->location_constraint
-        && $self->location_constraint eq 'EU' )
-    {
+    if ( defined $self->location_constraint &&
+         $self->location_constraint ne 'US') {
         $content
             = "<CreateBucketConfiguration><LocationConstraint>"
             . $self->location_constraint

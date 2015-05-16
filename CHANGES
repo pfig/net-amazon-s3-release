@@ -1,6 +1,6 @@
 Revision history for Perl module Net::Amazon::S3:
 
-0.81 May 15, 2015
+0.81 {{NEXT}}
      - Restore CHANGES files format
      - Change path to new github repo
      - Add optional delimiter parameter to
@@ -8,6 +8,7 @@ Revision history for Perl module Net::Amazon::S3:
        Lackas)
      - Add expected and received ETag value if upload is detected as
        being incorrect.
+     - Add support for all location constraints when creating buckets
 
 0.80 Sun Apr 12 12:33:19 GMT 2015
      - Fixed a bug in ETag validation (patch by Ali Anari)

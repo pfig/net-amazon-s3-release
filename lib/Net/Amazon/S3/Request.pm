@@ -9,7 +9,7 @@ use Regexp::Common qw /net/;
 
 enum 'AclShort' =>
     [ qw(private public-read public-read-write authenticated-read) ];
-enum 'LocationConstraint' => [ 'US', 'EU' ];
+enum 'LocationConstraint' => [ 'US', 'EU', 'eu-west-1', 'eu-central-1', 'us-west-1', 'us-west-2', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'sa-east-1'  ];
 
 # To comply with Amazon S3 requirements, bucket names must:
 # Contain lowercase letters, numbers, periods (.), underscores (_), and dashes (-)
