@@ -113,7 +113,7 @@ sub list {
                     client => $self->client,
                     bucket => $self,
                     key    => $xpc->findvalue( './s3:Key', $node ),
-                    last_modified =>
+                    last_modified_raw =>
                         $xpc->findvalue( './s3:LastModified', $node ),
                     etag => $etag,
                     size => $xpc->findvalue( './s3:Size', $node ),

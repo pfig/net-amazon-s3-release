@@ -214,6 +214,14 @@ you to connect to any S3-compatible host.
 
 =back
 
+When using L<Net::Amazon::S3> in child processes using fork (such as in
+combination with the excellent L<Parallel::ForkManager>) you should create the
+S3 object in each child, use a fresh LWP::UserAgent in each child, or disable
+the L<LWP::ConnCache> in the parent:
+
+    $s3->ua( LWP::UserAgent->new( 
+        keep_alive => 0, requests_redirectable => [qw'GET HEAD DELETE PUT POST'] );
+
 =cut
 
 sub BUILD {
