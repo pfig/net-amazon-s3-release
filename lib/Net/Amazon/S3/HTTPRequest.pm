@@ -44,6 +44,12 @@ sub http_request {
         unless exists $headers->{Authorization};
     my $protocol = $self->s3->secure ? 'https' : 'http';
     my $host = $self->s3->host;
+    if ($self->s3->virtual_host) {
+        # use https://bucketname.s3.amazonaws.com instead of https://s3.amazonaws.com/bucketname
+        # see http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html
+        $path =~ s{(.*?)/}{} and my $bucket = $1;
+        $host = "$bucket.$host";
+    }
     my $uri = "$protocol://$host/$path";
 
     my $request
@@ -72,6 +78,12 @@ sub query_string_authentication_uri {
 
     my $protocol = $self->s3->secure ? 'https' : 'http';
     my $host = $self->s3->host;
+    if ($self->s3->virtual_host) {
+        # use https://bucketname.s3.amazonaws.com instead of https://s3.amazonaws.com/bucketname
+        # see http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html
+        $path =~ s{(.*?)/}{} and my $bucket = $1;
+        $host = "$bucket.$host";
+    }
     my $uri = "$protocol://$host/$path";
 
     $uri = URI->new($uri);
