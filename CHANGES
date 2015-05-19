@@ -9,6 +9,11 @@ Revision history for Perl module Net::Amazon::S3:
      - Add expected and received ETag value if upload is detected as
        being incorrect.
      - Add support for all location constraints when creating buckets
+     - making DateTime coercion optional for last_modified (something that
+       might happen million of times without ever been used, in a rather
+       expensive operation) (patch by Christian Lackas)
+     - avoiding MD5 calculation of large files (chunked uploads) that
+       are then never used (patch by Christian Lackas)
 
 0.80 Sun Apr 12 12:33:19 GMT 2015
      - Fixed a bug in ETag validation (patch by Ali Anari)
