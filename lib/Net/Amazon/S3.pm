@@ -144,7 +144,7 @@ has 'secure' => ( is => 'ro', isa => 'Bool', required => 0, default => 0 );
 has 'timeout' => ( is => 'ro', isa => 'Num',  required => 0, default => 30 );
 has 'retry'   => ( is => 'ro', isa => 'Bool', required => 0, default => 0 );
 has 'host'    => ( is => 'ro', isa => 'Str',  required => 0, default => 's3.amazonaws.com' );
-
+has 'use_virtual_host' => ( is => 'rw', isa => 'Bool', required => 0, default => 0 );
 has 'libxml' => ( is => 'rw', isa => 'XML::LibXML',    required => 0 );
 has 'ua'     => ( is => 'rw', isa => 'LWP::UserAgent', required => 0 );
 has 'err'    => ( is => 'rw', isa => 'Maybe[Str]',     required => 0 );
@@ -213,6 +213,17 @@ The S3 host endpoint to use. Defaults to 's3.amazonaws.com'. This allows
 you to connect to any S3-compatible host.
 
 =back
+
+=item use_virtual_host
+
+Use the virtual host method ('bucketname.s3.amazonaws.com') instead of specifying the
+bucket at the first part of the path. This is particularily useful if you want to access
+buckets not located in the US-Standard region (such as EU, Asia Pacific or South America).
+See L<http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html> for the pros and cons.
+
+=back
+
+=head3 Notes
 
 When using L<Net::Amazon::S3> in child processes using fork (such as in
 combination with the excellent L<Parallel::ForkManager>) you should create the
