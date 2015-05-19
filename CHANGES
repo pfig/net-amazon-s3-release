@@ -14,6 +14,9 @@ Revision history for Perl module Net::Amazon::S3:
        expensive operation) (patch by Christian Lackas)
      - avoiding MD5 calculation of large files (chunked uploads) that
        are then never used (patch by Christian Lackas)
+     - add ability to set use_virtual_host to use virtual host method
+       of making requests which eliminate having to set the region
+       endpoint of a bucket.
 
 0.80 Sun Apr 12 12:33:19 GMT 2015
      - Fixed a bug in ETag validation (patch by Ali Anari)
